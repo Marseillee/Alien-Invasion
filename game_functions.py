@@ -56,9 +56,12 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, 
         check_high_score(stats, sb)
 
     if len(aliens) == 0:
-        # Уничтожение существующих пуль, повышение скорости и создание нового флота
+        # Уничтожение существующих пуль, повышение скорости, новый уровень и создание нового флота
         bullets.empty()
         ai_settings.increase_speed()
+        # Увеличение уровня
+        stats.level += 1
+        sb.prep_level()
         create_fleet(ai_settings, screen, ship, aliens)
 
 
@@ -106,7 +109,7 @@ def create_fleet(ai_settings, screen, ship, aliens):
             create_alien(ai_settings, screen, aliens, alien_number, row_number)
 
 
-def check_events(ai_settings, screen, stats, play_button, ship, aliens,
+def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens,
                  bullets):
     """Обрабатывает нажатия клавиш и событи мыши"""
     for event in pygame.event.get():
@@ -118,11 +121,11 @@ def check_events(ai_settings, screen, stats, play_button, ship, aliens,
             check_keyup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(ai_settings, screen, stats, play_button,
+            check_play_button(ai_settings, screen, stats, sb, play_button,
                               ship, aliens, bullets, mouse_x, mouse_y)
 
 
-def check_play_button(ai_settings, screen, stats, play_button, ship, aliens,
+def check_play_button(ai_settings, screen, stats, sb, play_button, ship, aliens,
                       bullets, mouse_x, mouse_y):
     """Запускает новую игру при нажатии кнопки Play"""
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
@@ -134,6 +137,11 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens,
         # Сброс игровой статистики
         stats.reset_stats()
         stats.game_active = True
+
+        # Сброс изображений счетов и уровня
+        sb.prep_score()
+        sb.prep_high_score()
+        sb.prep_level()
 
         # Очистка списков приешльцев и пуль
         aliens.empty()
